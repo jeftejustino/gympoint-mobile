@@ -1,35 +1,26 @@
 import { all, put, call, takeLatest } from 'redux-saga/effects';
+import { Alert } from 'react-native';
+
 import { SignInSuccess, SignInFailure } from './actions';
 
 import api from '~/services/api';
 
 export function* SignIn({ payload }) {
   try {
-    const { email, password } = payload;
+    const { userId } = payload;
 
-    const response = yield call(api.post, 'session', {
-      email,
-      password,
-    });
+    const response = yield call(api.get, `student/${userId}`);
 
-    const { user, token } = response.data;
+    const profile = response.data;
 
-    api.defaults.headers.Authorization = `Bearer ${token}`;
-
-    yield put(SignInSuccess(token, user));
+    yield put(SignInSuccess(profile));
   } catch (error) {
     yield put(SignInFailure());
+    Alert.alert(
+      'Falha na autenticação',
+      'O ID informado não consta no nosso cadastro!'
+    );
   }
 }
 
-export function setToken({ payload }) {
-  const { token } = payload.auth;
-  if (token) {
-    api.defaults.headers.Authorization = `Bearer ${token}`;
-  }
-}
-
-export default all([
-  takeLatest('@auth/SIGN_IN_REQUEST', SignIn),
-  takeLatest('persist/REHYDRATE', setToken),
-]);
+export default all([takeLatest('@auth/SIGN_IN_REQUEST', SignIn)]);
