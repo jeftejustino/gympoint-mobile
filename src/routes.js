@@ -9,6 +9,10 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import SignIn from '~/pages/SignIn';
 import Dashboard from '~/pages/Dashboard';
 
+import HelpOrderQuestions from '~/pages/HelpOrder/Questions';
+import HelpOrderAnswer from '~/pages/HelpOrder/Answer';
+import HelpOrderCreate from '~/pages/HelpOrder/Create';
+
 import logo from '~/assets/images/header_logo.png';
 
 export default (Signed = false) =>
@@ -47,7 +51,9 @@ export default (Signed = false) =>
             HelpOrder: {
               screen: createStackNavigator(
                 {
-                  Dashboard,
+                  HelpOrderQuestions,
+                  HelpOrderAnswer,
+                  HelpOrderCreate,
                 },
                 {
                   resetOnBlur: true,
