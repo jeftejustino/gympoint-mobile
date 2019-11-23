@@ -7,9 +7,7 @@ export const Container = styled.SafeAreaView`
 export const CheckinList = styled.FlatList.attrs({
   showsVerticalScrollIndicator: false,
   contentContainerStyle: { padding: 30 },
-})`
-  margin-top: 10px;
-`;
+})``;
 
 export const CheckinItem = styled.View`
   flex-direction: row;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -15,32 +16,71 @@ export default (Signed = false) =>
     createSwitchNavigator(
       {
         SignIn,
-        App: createStackNavigator(
+        App: createBottomTabNavigator(
           {
-            App: createBottomTabNavigator(
-              {
-                Dashboard,
-              },
-              {
-                resetOnBlur: true,
-                tabBarOptions: {
-                  keyboardHidesTabBar: true,
-                  activeTintColor: '#EE4E62',
-                  inactiveTintColor: '#999',
+            Checkins: {
+              screen: createStackNavigator(
+                {
+                  Dashboard,
                 },
-              }
-            ),
+                {
+                  resetOnBlur: true,
+                  defaultNavigationOptions: {
+                    headerTitle: <Image source={logo} />,
+                    headerTitleContainerStyle: {
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    },
+                    headerRight: <View />,
+                    headerLeft: <View />,
+                  },
+                }
+              ),
+
+              navigationOptions: {
+                tabBarLabel: 'Check-ins',
+                tabBarIcon: ({ tintColor }) => (
+                  <Icon name="edit-location" size={20} color={tintColor} />
+                ),
+              },
+            },
+            HelpOrder: {
+              screen: createStackNavigator(
+                {
+                  Dashboard,
+                },
+                {
+                  resetOnBlur: true,
+                  defaultNavigationOptions: {
+                    headerTitle: <Image source={logo} />,
+                    headerTitleContainerStyle: {
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    },
+                    headerRight: <View />,
+                    headerLeft: <View />,
+                  },
+                }
+              ),
+
+              navigationOptions: {
+                tabBarLabel: 'Pedir ajuda',
+                tabBarIcon: ({ tintColor }) => (
+                  <Icon name="live-help" size={20} color={tintColor} />
+                ),
+              },
+            },
           },
           {
             resetOnBlur: true,
-            defaultNavigationOptions: {
-              headerTitle: <Image source={logo} />,
-              headerTitleContainerStyle: {
-                alignItems: 'center',
-                justifyContent: 'center',
+            tabBarOptions: {
+              style: {
+                paddingTop: 5,
+                paddingBottom: 5,
               },
-              headerRight: <View />,
-              headerLeft: <View />,
+              keyboardHidesTabBar: true,
+              activeTintColor: '#EE4E62',
+              inactiveTintColor: '#999',
             },
           }
         ),

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
 import { formatRelative, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -96,10 +95,3 @@ export default function Dashboard() {
     </Container>
   );
 }
-
-Dashboard.navigationOptions = {
-  tabBarLabel: 'Check-ins',
-  tabBarIcon: ({ tintColor }) => (
-    <Icon name="edit-location" size={20} color={tintColor} />
-  ),
-};
