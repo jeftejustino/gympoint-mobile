@@ -30,10 +30,20 @@ function Questions({ isFocused, navigation }) {
 
       const data = response.data.map(item => ({
         ...item,
-        dateFormatted: formatRelative(parseISO(item.updatedAt), new Date(), {
-          locale: pt,
-          addSuffix: true,
-        }),
+        dateAnswerFormatted: item.answer_at
+          ? formatRelative(parseISO(item.answer_at), new Date(), {
+              locale: pt,
+              addSuffix: true,
+            })
+          : null,
+        dateQuestionFormatted: formatRelative(
+          parseISO(item.createdAt),
+          new Date(),
+          {
+            locale: pt,
+            addSuffix: true,
+          }
+        ),
       }));
 
       setHelpOrders(data);
@@ -69,7 +79,9 @@ function Questions({ isFocused, navigation }) {
                   {item.answer ? 'Respondido' : 'Sem Resposta'}
                 </StatusText>
               </Status>
-              <DateUpdate>{item.dateFormatted}</DateUpdate>
+              <DateUpdate>
+                {item.dateQuestionFormatted || item.dateAwnserFormatted}
+              </DateUpdate>
               <Question>{item.question}</Question>
             </ItemContent>
           </Item>
