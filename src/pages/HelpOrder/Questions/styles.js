@@ -48,3 +48,7 @@ export const Question = styled.Text`
   line-height: 26px;
   margin-top: 16px;
 `;
+
+export const ActivityContainer = styled.View`
+  margin-top: 20px;
+`;

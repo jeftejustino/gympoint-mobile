@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 import { formatRelative, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -12,38 +12,72 @@ import {
   CheckinItem,
   CheckinNumber,
   CheckinDate,
+  ActivityContainer,
 } from './styles';
 
 import api from '~/services/api';
 
 export default function Dashboard() {
   const [checkins, setCheckins] = useState([]);
+  const [page, setPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [stopLoadingMore, setStopLoadingMore] = useState(false);
   const userId = useSelector(state => state.user.profile.id);
 
-  useEffect(() => {
-    async function getCheckins() {
-      try {
-        const response = await api.get(`students/${userId}/checkin`);
+  async function getCheckins() {
+    try {
+      if (page > 1) setLoadingMore(true);
+      else setRefreshing(true);
 
-        let total = response.data.length;
-        const data = response.data.map(item => ({
-          ...item,
-          order: total--,
-          dateFormatted: formatRelative(parseISO(item.createdAt), new Date(), {
-            locale: pt,
-            addSuffix: true,
-          }),
-        }));
+      const response = await api.get(`students/${userId}/checkin`, {
+        params: {
+          page,
+        },
+      });
 
-        setCheckins(data);
-      } catch (error) {
-        console.tron.log(error);
+      let total = response.headers.count - (page - 1) * 10;
+      const data = response.data.map(item => ({
+        ...item,
+        // eslint-disable-next-line no-plusplus
+        order: total--,
+        dateFormatted: formatRelative(parseISO(item.createdAt), new Date(), {
+          locale: pt,
+          addSuffix: true,
+        }),
+      }));
+
+      if (data.length === 0) {
+        setStopLoadingMore(true);
+        return;
       }
+      if (page > 1) setCheckins([...checkins, ...data]);
+      else setCheckins(data);
+    } catch (error) {
+      console.tron.log(error);
+    } finally {
+      setLoadingMore(false);
+      setRefreshing(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }
 
+  useEffect(() => {
     getCheckins();
-  }, [userId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
+  function nextPage() {
+    if (stopLoadingMore) return;
+    console.tron.log(`STOP LOADING ${stopLoadingMore}`);
+    setPage(page + 1);
+  }
+
+  function reload() {
+    setPage(1);
+    setStopLoadingMore(false);
+  }
 
   async function handleCheckin() {
     setLoading(true);
@@ -83,6 +117,14 @@ export default function Dashboard() {
             Novo check-in
           </Button>
         }
+        onRefresh={() => {
+          reload();
+        }}
+        refreshing={refreshing}
+        onEndReached={() => {
+          nextPage();
+        }}
+        onEndReachedThreshold={0.1}
         data={checkins}
         keyExtractor={item => String(item.id)}
         renderItem={({ item }) => (
@@ -91,6 +133,14 @@ export default function Dashboard() {
             <CheckinDate>{item.dateFormatted}</CheckinDate>
           </CheckinItem>
         )}
+        ListFooterComponent={() => {
+          if (!loadingMore) return null;
+          return (
+            <ActivityContainer>
+              <ActivityIndicator size="large" color="#ee4e62" />
+            </ActivityContainer>
+          );
+        }}
       />
     </Container>
   );

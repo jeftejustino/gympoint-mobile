@@ -31,3 +31,7 @@ export const CheckinDate = styled.Text`
   color: #666;
   font-size: 14px;
 `;
+
+export const ActivityContainer = styled.View`
+  margin-top: 20px;
+`;

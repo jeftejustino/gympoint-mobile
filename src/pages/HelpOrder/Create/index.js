@@ -1,26 +1,31 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Container, TextArea } from './styles';
 
 import Button from '~/components/Button';
 import api from '~/services/api';
 
+import { reloadHelpOrders } from '~/store/modules/user/actions';
+
 export default function Create({ navigation }) {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const userId = useSelector(state => state.user.profile.id);
 
   async function handleSubmit() {
     setLoading(true);
     try {
-      const response = await api.post(`students/${userId}/help-orders`, {
+      await api.post(`students/${userId}/help-orders`, {
         question,
       });
 
+      dispatch(reloadHelpOrders(true));
       navigation.goBack();
       Alert.alert(
         'Pedido enviado com sucesso!',
